@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple WebSocket Client</title>
+	<!-- Tailwind CSS CDN for styling -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		body {
+			font-family: 'Inter', sans-serif;
+			background-color: #f3f4f6;
+		}
+	</style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+<div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg space-y-6">
+	<h1 class="text-3xl font-extrabold text-center text-gray-800">WebSocket Client</h1>
+
+	<!-- Connection Status -->
+	<div class="text-center font-semibold text-sm">
+		Status: <span id="status" class="font-bold text-red-500">Disconnected</span>
+	</div>
+
+	<!-- Message Log Display -->
+	<div id="messages" class="h-64 overflow-y-auto bg-gray-100 rounded-lg p-4 text-sm text-gray-700 space-y-2 border border-gray-200">
+		<!-- Messages will be appended here -->
+	</div>
+
+	<!-- Message Input and Send Button -->
+	<div class="flex space-x-2">
+		<input type="text" id="message-input" placeholder="Type a message..." class="flex-1 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+		<button id="send-button" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+			Send
+		</button>
+	</div>
+</div>
+
+<script>
+	// The WebSocket URL to connect to.
+	const websocketUrl = "wss://test-do-ws-hibernate.mike-chabot.workers.dev";
+
+	// UI element references
+	const statusElement = document.getElementById('status');
+	const messagesElement = document.getElementById('messages');
+	const messageInput = document.getElementById('message-input');
+	const sendButton = document.getElementById('send-button');
+
+	// Create the WebSocket instance.
+	const ws = new WebSocket(websocketUrl);
+
+	// --- WebSocket Event Handlers ---
+
+	// Event handler for a successful connection.
+	ws.onopen = () => {
+		console.log("WebSocket connection opened.");
+		statusElement.textContent = "Connected";
+		statusElement.className = "font-bold text-green-500";
+		addMessage("System: Connected to WebSocket server.");
+	};
+
+	// Event handler for an incoming message.
+	ws.onmessage = (event) => {
+		console.log("Received message:", event.data);
+		addMessage("Server: " + event.data);
+	};
+
+	// Event handler for a closed connection.
+	ws.onclose = () => {
+		console.log("WebSocket connection closed.");
+		statusElement.textContent = "Disconnected";
+		statusElement.className = "font-bold text-red-500";
+		addMessage("System: Disconnected from WebSocket server.");
+	};
+
+	// Event handler for an error.
+	ws.onerror = (error) => {
+		console.error("WebSocket error:", error);
+		statusElement.textContent = "Error";
+		statusElement.className = "font-bold text-red-500";
+		addMessage("System: An error occurred.");
+	};
+
+	// --- UI Interaction Logic ---
+
+	// Function to add a message to the message log display.
+	function addMessage(text) {
+		const p = document.createElement('p');
+		p.textContent = text;
+		messagesElement.appendChild(p);
+		// Auto-scroll to the bottom of the message log.
+		messagesElement.scrollTop = messagesElement.scrollHeight;
+	}
+
+	// Function to send the message from the input field.
+	function sendMessage() {
+		const message = messageInput.value.trim();
+		if (message) {
+			// Check if the WebSocket is open before sending.
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.send(message);
+				addMessage("You: " + message);
+				messageInput.value = ''; // Clear the input field.
+			} else {
+				addMessage("System: Cannot send message. WebSocket is not connected.");
+			}
+		}
+	}
+
+	// Add a click event listener to the send button.
+	sendButton.addEventListener('click', sendMessage);
+
+	// Allow sending a message by pressing the Enter key in the input field.
+	messageInput.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			sendMessage();
+		}
+	});
+</script>
+</body>
+</html>
