@@ -1,0 +1,35 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "test-do-ws-hibernate",
+	"main": "src/index.ts",
+	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_date": "2025-08-21",
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"TestDurableObject"
+			],
+			"tag": "v1"
+		}
+	],
+	"env": {
+		"production": {
+			"name": "test-do-ws-hibernate",
+			"durable_objects": {
+				"bindings": [
+					{
+						"class_name": "TestDurableObject",
+						"name": "TEST_DURABLE_OBJECT"
+					}
+				]
+			}
+		}
+	},
+	"observability": {
+		"enabled": true
+	}
+}
