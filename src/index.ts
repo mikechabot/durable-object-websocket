@@ -98,7 +98,10 @@ export default {
 			return new Response(null, { headers });
 		}
 
-		const id = env.TEST_DURABLE_OBJECT.idFromName(`path:${pathname}`);
+		const room = `path:${pathname}`;
+		console.log(`Using ${room}`);
+
+		const id = env.TEST_DURABLE_OBJECT.idFromName(room);
 		const stub = env.TEST_DURABLE_OBJECT.get(id);
 
 		const upgradeHeader = request.headers.get('Upgrade');
