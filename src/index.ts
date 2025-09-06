@@ -50,19 +50,6 @@ export class TestDurableObject extends DurableObject<Env> {
 		// Get the session associated with the WebSocket connection.
 		const session = this.sessions.get(ws)!;
 
-		// Upon receiving a message from the client, the server replies with the same message, the session ID of the connection,
-		// and the total number of connections with the "[Durable Object]: " prefix
-		ws.send(
-			`[Durable Object] message: ${message}, from: ${session.id}. Total connections: ${this.sessions.size}`,
-		);
-
-		// Send a message to all WebSocket connections, loop over all the connected WebSockets.
-		this.sessions.forEach((attachment, connectedWs) => {
-			connectedWs.send(
-				`[Durable Object] message: ${message}, from: ${session.id}. Total connections: ${this.sessions.size}`,
-			);
-		});
-
 		// Send a message to all WebSocket connections except the connection (ws),
 		// loop over all the connected WebSockets and filter out the connection (ws).
 		this.sessions.forEach((attachment, connectedWs) => {

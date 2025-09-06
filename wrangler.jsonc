@@ -29,6 +29,14 @@
 			}
 		}
 	},
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "TestDurableObject",
+				"name": "TEST_DURABLE_OBJECT"
+			}
+		]
+	},
 	"observability": {
 		"enabled": true
 	}
